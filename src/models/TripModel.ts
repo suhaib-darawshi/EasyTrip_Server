@@ -1,5 +1,6 @@
 import { Model, ObjectID } from "@tsed/mongoose";
 import {Default, Property} from "@tsed/schema";
+import { CompanyModel } from "./CompanyModel";
 @Model()
 export class TripModel {
 
@@ -17,7 +18,10 @@ export class TripModel {
 
   @Property()
   description:string;
-
+  
+  @Property()
+  companyid:string;
+  
   @Property()
   liked_users:string[];
 
@@ -33,6 +37,5 @@ export class TripModel {
   @Default(true)
   available:boolean;
 
-  @Property()
-  company:string;
+  
 }

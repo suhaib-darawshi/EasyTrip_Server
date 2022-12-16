@@ -21,6 +21,10 @@ export class UserModel {
   phoneNumber:string;
 
   @Property()
+  @Default("defaultImage.png")
+  image:string;
+
+  @Property()
   @Default("standard")
   role:string;
 

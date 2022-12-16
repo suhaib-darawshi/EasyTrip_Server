@@ -15,8 +15,14 @@ export class UserService {
         return await this.userModel.find();
     }
     async getInfo(em:string){
-        return await this.userModel.findOne({email:em});
+        let user:UserModel|null;
+        user= await this.userModel.findOne({email:em});
+        if(user!=null){
+            user.image="public/uploads/usersImages/"+user.image;
+        }
+        return user;
     }
+    
     async auth(user:UserModel){
         let users:UserModel[];
         users=await this.userModel.find({email:user.email});
@@ -55,6 +61,7 @@ export class UserService {
     async update(user:UserModel){
         return await this.userModel.findByIdAndUpdate(user._id,user);
     }
+    
 
     async delete(user:UserModel){
         return await this.userModel.findByIdAndDelete(user._id);
