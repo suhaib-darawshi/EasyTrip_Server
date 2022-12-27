@@ -33,6 +33,9 @@ export class UserModel {
   createdAt:Date;
 
   @Property()
-  
+  @Default([])
+  recomended:string[];
+  @Property()
+  @Default([])
   liked_trips:string[];
 }

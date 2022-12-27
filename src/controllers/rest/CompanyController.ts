@@ -14,13 +14,13 @@ export class CompanyController {
     return this.service.getAll();
   }
 
-  @Get("/")
-  get(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
-    return this.service.get(com._id);
-  }
   @Post("/")
   create(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
     return this.service.create(com);
+  }
+  @Post("/getCompanyInfo")
+  getInfo(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
+    return this.service.getInfo(com.email);
   }
   @Put("/updateCompany")
   update(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
@@ -32,8 +32,11 @@ export class CompanyController {
   }
   @Post("/getSpecific")
   getTrips(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
-    return this.service.getCompanyTrips(com);
-
+    return this.service.getCompanyTrips(com._id);
+  }
+  @Post("/login")
+  login(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
+  return this.service.login(com);  
   }
   
 }

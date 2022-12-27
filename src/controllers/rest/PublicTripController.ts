@@ -45,5 +45,6 @@ export class PublicTripController {
   addCompany(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()ids:AddTrip){
     return this.tripService.putCompanyById(ids);
   }
+  
 
 }
