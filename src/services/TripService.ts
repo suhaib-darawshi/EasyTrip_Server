@@ -11,53 +11,31 @@ export class TripService {
     constructor(@Inject(TripModel)private tripModel:MongooseModel<TripModel>,@Inject(CompanyModel)private companyModel:MongooseModel<CompanyModel>){
 
     }
-    async demonstrateCompany(trip:TripModel|null){
+    async demonstrateCompany(trip:TripModel){
         let tr:TripModel|null;
         if(trip==null)
         trip={}as TripModel;
         tr=await this.tripModel.findById(trip._id);
         let comid:string;
         let comp:CompanyModel|null;
-        let intr:ClientTripModel={
-            
-        }as ClientTripModel;
+        
         if(tr!=null){
             comid=tr.companyid;
             comp=await this.companyModel.findById(comid);
             if(comp!=null){
-                let intrr:ClientTripModel={
-                    id:tr._id,
-                    name:tr.name,
-                    available:tr.available,
-                    createdAt:tr.createdAt,
-                    description:tr.description,
-                    url:tr.url,
-                    company:comp,
-                    liked_count:tr.liked_count,
-                    liked_users:tr.liked_users,
-                    location:tr.location
-                }as ClientTripModel;
-                intr.name=tr.name;
-                intr.id=tr._id;
-                intr.available=tr.available;
-                intr.createdAt=tr.createdAt;
-                intr.description=tr.description;
-                intr.url=tr.url;
-                intr.liked_count=tr.liked_count;
-                intr.liked_users=tr.liked_users;
-                intr.company=comp;
-                intr.location=tr.location;
-                return intrr;
+                tr.companyid=comp;
 
             }
+            trip=tr;
             
 
         }
-        return intr;
+        
+        return trip;
         
     }
     async getAll(){
-        let intrtrips:ClientTripModel[]=[];
+        let intrtrips:TripModel[]=[];
         let trips:TripModel[]=[];
         trips= await this.tripModel.find();
         for(var x of trips){

@@ -31,7 +31,7 @@ export class CompanyService {
     }
     async getCompanyTrips(id:string){
         let tr:TripModel[]=[];
-        let intr:ClientTripModel[]=[];
+        let intr:TripModel[]=[];
         tr= await this.tripModel.find({companyid:id});
         for (const iterator of tr) {
             intr.push(await this.demonstrateCompany(iterator));
@@ -86,6 +86,18 @@ export class CompanyService {
         }
         return "USER NOT FOUND";
     }
+    async addNewTrip(trip:TripModel){
+        let tr:TripModel=await this.tripModel.create(trip);
+        let intr:AddTrip={
+            tripid:tr._id,
+            companyid:tr.companyid,
+            method:"add"
+        }as AddTrip;
+        intr.tripid=tr._id;
+        intr.companyid=tr.companyid;
+        intr.method="add";
+        await this.addTrip(intr);
+    }
     async addTrip(intr:AddTrip){
         let com:CompanyModel| null;
         com =await this.companyMode.findById(intr.companyid);
@@ -107,49 +119,27 @@ export class CompanyService {
         }
 
     }
-    async demonstrateCompany(trip:TripModel|null){
+   async demonstrateCompany(trip:TripModel){
         let tr:TripModel|null;
         if(trip==null)
         trip={}as TripModel;
         tr=await this.tripModel.findById(trip._id);
         let comid:string;
         let comp:CompanyModel|null;
-        let intr:ClientTripModel={
-            
-        }as ClientTripModel;
+        
         if(tr!=null){
             comid=tr.companyid;
             comp=await this.companyMode.findById(comid);
             if(comp!=null){
-                let intrr:ClientTripModel={
-                    id:tr._id,
-                    name:tr.name,
-                    available:tr.available,
-                    createdAt:tr.createdAt,
-                    description:tr.description,
-                    url:tr.url,
-                    company:comp,
-                    liked_count:tr.liked_count,
-                    liked_users:tr.liked_users,
-                    location:tr.location
-                }as ClientTripModel;
-                intr.name=tr.name;
-                intr.id=tr._id;
-                intr.available=tr.available;
-                intr.createdAt=tr.createdAt;
-                intr.description=tr.description;
-                intr.url=tr.url;
-                intr.liked_count=tr.liked_count;
-                intr.liked_users=tr.liked_users;
-                intr.company=comp;
-                intr.location=tr.location;
-                return intrr;
+                tr.companyid=comp;
 
             }
+            trip=tr;
             
 
         }
-        return intr;
+        
+        return trip;
         
     }
     

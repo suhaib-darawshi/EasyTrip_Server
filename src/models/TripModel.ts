@@ -21,12 +21,15 @@ export class TripModel {
   description:string;
   
   @Property()
-  companyid:string;
+  companyid:any;
   @Property()
+  @Default("not provided")
   hotel:string;
   @Property()
+  @Default("not provided")
   hotelRank:string;
   @Property()
+  @Default("not provided")
   flight:string;
   
   @Property()
@@ -46,6 +49,10 @@ export class TripModel {
   BookLimit:Number;
 
   @Property()
+  @Default(0)
+  duration:Number;
+
+  @Property()
   @Default([])
   BookedUsers:string[];
 
@@ -54,8 +61,8 @@ export class TripModel {
   end:Date;
 
   @Property()
-  @Default(0)
-  price:Number;
+  @Default('0')
+  price:string;
 
   @Property()
   @Default(0)

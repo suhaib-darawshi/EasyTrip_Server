@@ -1,4 +1,4 @@
-import { PlatformMulterFile,MultipartFile, BodyParams } from "@tsed/common";
+import { PlatformMulterFile,MultipartFile, BodyParams, MulterOptions } from "@tsed/common";
 import {Controller, Inject} from "@tsed/di";
 import {Delete, Get, Post, Put} from "@tsed/schema";
 import { AddTrip } from "src/interfaces/AddTrip";
@@ -21,12 +21,12 @@ export class PublicTripController {
   get(@MultipartFile('file') file:PlatformMulterFile,@BodyParams()trip:TripModel){
     return this.tripService.get(trip);
   }
-  
-  @Post("/")
-  create(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:TripModel){
-    return this.tripService.create(trip);
+
+  @Post("/uploadImage")
+  @MulterOptions({dest:"./public/uploads/images"})
+  up(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:TripModel){
+    return "./public/uploads/images"+file.filename;
   }
-  
   @Put("/")
   update(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:TripModel){
     return this.tripService.update(trip);
