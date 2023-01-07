@@ -1,5 +1,6 @@
 import {Property,Default} from "@tsed/schema";
 import { Model, ObjectID } from "@tsed/mongoose";
+import { MessageModel } from "./MessageModel";
 @Model()
 export class UserModel {
   @ObjectID("id")
@@ -38,4 +39,12 @@ export class UserModel {
   @Property()
   @Default([])
   liked_trips:string[];
+
+  @Property()
+  @Default([])
+  booked_trips:string[];
+
+  @Property()
+  @Default([])
+  chat:MessageModel[]
 }

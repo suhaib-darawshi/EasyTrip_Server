@@ -2,6 +2,7 @@ import { BodyParams, MulterOptions, MultipartFile, PathParams, PlatformMulterFil
 import {Controller, Inject} from "@tsed/di";
 import { ObjectID } from "@tsed/mongoose";
 import {Delete, Get, Post, Put} from "@tsed/schema";
+import { SendMessageIntr } from "src/interfaces/SendMessageIntr";
 import { UserModel } from "src/models/UserModel";
 import { UserService } from "src/services/UserService";
 
@@ -15,6 +16,10 @@ export class PublicUserController {
   @Get("/")
   getAll(){
     return this.userService.getAll();
+  }
+  @Post("/signupAuth")
+  get(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()id1:UserModel) {
+    return this.userService.signUp(id1);
   }
   @Post("/")
   createUser(@MultipartFile('file') file:PlatformMulterFile,@BodyParams()user:UserModel){
@@ -49,6 +54,11 @@ export class PublicUserController {
   updateUser(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()user:UserModel){
     
     return this.userService.update(user);
+  }
+  @Post("/contact")
+  contact(@MultipartFile("file")file:PlatformMulterFile,@BodyParams()msg:SendMessageIntr){
+    return this.userService.contactApp(msg);
+
   }
 
   

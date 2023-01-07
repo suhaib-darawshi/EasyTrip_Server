@@ -18,6 +18,7 @@
     "@tsed/json-mapper": "^7.8.0",
     "@tsed/logger": "^6.3.3",
     "@tsed/logger-file": "^6.3.3",
+    "@tsed/logger-smtp": "^6.3.3",
     "@tsed/mongoose": "^7.8.0",
     "@tsed/platform-cache": "^7.8.0",
     "@tsed/platform-exceptions": "^7.8.0",
@@ -40,7 +41,8 @@
     "dotenv-flow": "^3.2.0",
     "express": "^4.18.2",
     "method-override": "^3.0.0",
-    "mongoose": "^6.8.0"
+    "mongoose": "^6.8.0",
+    "source-map-support": "^0.5.21"
   },
   "devDependencies": {
     "@tsed/cli-plugin-mongoose": "4.2.2",
@@ -52,6 +54,7 @@
     "@types/method-override": "^0.0.32",
     "@types/multer": "^1.4.7",
     "@types/node": "^18.11.11",
+    "@types/nodemailer": "^6.4.7",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.1.1",

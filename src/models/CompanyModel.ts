@@ -19,7 +19,7 @@ export class CompanyModel {
   phone:string;
 
   @Property()
-  @Default('defaultImage.png')
+  @Default('public/uploads/companylogos/defaultImage.png')
   logo:string;
   
   @Property()

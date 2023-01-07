@@ -1,9 +1,22 @@
 import { Model, ObjectID } from "@tsed/mongoose";
 import {Default, Property} from "@tsed/schema";
+import { RateTrip } from "src/interfaces/RateTrip";
 import { CompanyModel } from "./CompanyModel";
+enum Category{
+  beach,
+  greenLand,
+  cheap,
+  expensive,
+  mountant,
+  desert,
+  scientific,
+  religous,
+  developedCity,
+  ancient
+}
 @Model()
 export class TripModel {
-
+  
   @ObjectID("id")
   _id: string;
 
@@ -14,6 +27,8 @@ export class TripModel {
   location:string;
 
   @Property()
+  categories:Number[];
+  @Property()
   
   url:string;
 
@@ -21,10 +36,14 @@ export class TripModel {
   description:string;
   
   @Property()
-  companyid:any;
+  companyid:string;
+  @Property()
+  @Default([])
+  rates:RateTrip[];
   @Property()
   @Default("not provided")
   hotel:string;
+
   @Property()
   @Default("not provided")
   hotelRank:string;
@@ -59,6 +78,10 @@ export class TripModel {
   @Property()
   @Default(Date.now)
   end:Date;
+
+  @Property()
+  @Default(0)
+  rate:Number;
 
   @Property()
   @Default('0')

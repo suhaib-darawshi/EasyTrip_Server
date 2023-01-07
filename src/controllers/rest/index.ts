@@ -5,5 +5,6 @@
 export * from "./CompanyController";
 export * from "./GetInfoController";
 export * from "./HelloWorldController";
+export * from "./MessageController";
 export * from "./PublicTripController";
 export * from "./PublicUserController";

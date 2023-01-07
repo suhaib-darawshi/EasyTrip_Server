@@ -11,6 +11,7 @@ import "@tsed/ajv";
 import "@tsed/mongoose";
 import {config} from "./config/index";
 import * as rest from "./controllers/rest/index";
+import { any } from "@tsed/schema";
 
 @Configuration({
   ...config,
@@ -18,6 +19,7 @@ import * as rest from "./controllers/rest/index";
   httpPort: process.env.PORT || 8083,
   httpsPort: false, // CHANGE
   componentsScan: false,
+  // mailer:any,
   mount: {
     "/rest": [
       ...Object.values(rest)
@@ -31,8 +33,10 @@ import * as rest from "./controllers/rest/index";
     bodyParser.json(),
     bodyParser.urlencoded({
       extended: true
-    })
+    }),
+    
   ],
+  
   views: {
     root: join(process.cwd(), "../views"),
     extensions: {
@@ -43,10 +47,12 @@ import * as rest from "./controllers/rest/index";
     "**/*.spec.ts"
   ],
   statics:{
-    "/public":join(process.cwd(),"./public")
+    "/public":join(process.cwd(),"./public"),
+    
   },
   multer:{
-    dest: join(process.cwd(),"./public/uploads")
+    dest: join(process.cwd(),"./public/uploads"),
+    
   },
 })
 export class Server {
@@ -56,3 +62,7 @@ export class Server {
   @Configuration()
   protected settings: Configuration;
 }
+// how to send email in ts.ed?
+
+
+
