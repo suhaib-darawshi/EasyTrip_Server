@@ -2,6 +2,7 @@ import {$log, PlatformLoggerSettings} from "@tsed/common";
 import {isProduction} from "../envs/index";
 import {Logger} from "@tsed/logger";
 import "@tsed/logger-smtp";
+
 const logger = new Logger("loggerName");
 
 logger.appenders.set("email", {
@@ -33,6 +34,10 @@ if (isProduction) {
     }
   });
 }
+
+
+
+
 
 export default <PlatformLoggerSettings> {
   disableRoutesSummary: isProduction

@@ -37,5 +37,6 @@ export interface ClientTripModel {
     foodDeserved:boolean;
     rates:RateTrip[];
     rate:Number;
+    approved:boolean;
 
 }

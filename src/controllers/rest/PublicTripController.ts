@@ -1,4 +1,4 @@
-import { PlatformMulterFile,MultipartFile, BodyParams, MulterOptions } from "@tsed/common";
+import { PlatformMulterFile,MultipartFile, BodyParams, MulterOptions, UseBefore } from "@tsed/common";
 import {Controller, Inject} from "@tsed/di";
 import {Delete, Get, Post, Put} from "@tsed/schema";
 import { AddTrip } from "src/interfaces/AddTrip";
@@ -7,7 +7,7 @@ import { LikeTripJson } from "src/interfaces/LikeTripJson";
 import { RateTrip } from "src/interfaces/RateTrip";
 import { TripModel } from "src/models/TripModel";
 import { TripService } from "src/services/TripService";
-
+import {jwtMiddleware}from "src/middlewares/asd"
 @Controller("/public-trip-controller")
 export class PublicTripController {
   constructor(@Inject(TripService)private tripService:TripService){
@@ -16,7 +16,7 @@ export class PublicTripController {
 
   @Get("/")
   getAll() {
-    return this.tripService.getAll();
+    return this.tripService.getAllForUsers();
   }
 
   @Get("/")
@@ -42,7 +42,7 @@ export class PublicTripController {
     return this.tripService.likeTrip(ids);
     
   }
-
+  @UseBefore(jwtMiddleware)
   @Delete("/")
   delete(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:ClientTripModel){
     return this.tripService.delete(trip);

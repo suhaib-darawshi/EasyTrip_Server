@@ -66,7 +66,9 @@ export class TripModel {
   @Property()
   @Default(0)
   BookLimit:Number;
-
+  @Property()
+  @Default(false)
+  approved:boolean;
   @Property()
   @Default(0)
   duration:Number;

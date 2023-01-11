@@ -3,21 +3,46 @@ import { Logger } from "@tsed/logger";
 import { MongooseModel, ObjectID } from "@tsed/mongoose";
 import { ObjectId } from "mongoose";
 import { UserModel } from "src/models/UserModel";
-
+import * as passport from 'passport';
+import * as JWT from 'passport-jwt';
+import * as jwt from 'jsonwebtoken';
 import "@tsed/logger-smtp";
 import { createTransport, getTestMessageUrl } from "nodemailer";
 import { SendMessageIntr } from "src/interfaces/SendMessageIntr";
 import { MessageModel } from "src/models/MessageModel";
+
+
+import * as passportLocal from 'passport-local';
+
+import { Service } from '@tsed/di';
+
+
+const JWT_SECRET = process.env.JWT_SECRET || 'my-secret';
 @Injectable()
 export class UserService {
     constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>){
-
     }
+    async generateJWT(user: UserModel) {
+        const payload = {
+          id: user._id,
+          // include any other information you want to include in the token
+        };
+        const token = jwt.sign(payload, JWT_SECRET, {
+          expiresIn: '1h', // token expires in one hour
+        });
+        return token;
+      }
+      
+      
     async getone(){
         return await this.userModel.findOne();
     }
     async getAll(){
-        return await this.userModel.find();
+        let users:UserModel[]= await this.userModel.find();
+        for (var iterator of users) {
+            iterator.image="public/uploads/usersImages/"+iterator.image;
+        }
+        return users;
     }
     async getInfo(em:string){
         let user:UserModel|null;
@@ -80,18 +105,20 @@ export class UserService {
         users=await this.userModel.find({email:user.email});
         let au:boolean = false;
         let pu:boolean = false;
+        let usere:UserModel=user;
         for(var x of users){
             if(x.email==user.email){
 
                 au=true;
                 if(x.password==user.password){
                     pu=true;
+                    usere=x;
                 }
                 break;
             }
         }
         if(pu){
-            return "ACCESSED";
+            return await this.generateJWT(usere);
         }
         else if(au){
             return "WRONG PASSOWRD"
@@ -143,4 +170,6 @@ export class UserService {
             await this.userModel.findByIdAndUpdate(msg.userid,{chat:user.chat});
         }
     }
+  
+
 }

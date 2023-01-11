@@ -77,6 +77,15 @@ export class TripService {
         
     //     return intr;
     // }
+    async getAllForUsers(){
+        let intrtrips:ClientTripModel[]=[];
+        let trips:TripModel[]=[];
+        trips= await this.tripModel.find({approved:true});
+        for(var x of trips){
+            intrtrips.push(await this.TripModeltoClientModel(x));
+        }
+        return intrtrips;
+    }
     async getAll(){
         let intrtrips:ClientTripModel[]=[];
         let trips:TripModel[]=[];
@@ -85,6 +94,10 @@ export class TripService {
             intrtrips.push(await this.TripModeltoClientModel(x));
         }
         return intrtrips;
+    }
+    async acceptTrip(trip:TripModel){
+        
+        return await this.tripModel.findByIdAndUpdate(trip._id,trip);
     }
     async get(trip:ClientTripModel){
         let tr:TripModel|null;
@@ -117,7 +130,7 @@ export class TripService {
             
         }
         trip.liked_count=trip.liked_users.length;
-        return await this.tripModel.findByIdAndUpdate(ids.tripid,{liked_users:trip.liked_users,liked_count:trip.liked_count});
+        return await this.tripModel.findByIdAndUpdate(ids.tripid,trip);
 
         
     }
@@ -227,7 +240,8 @@ export class TripService {
             price:trc.price,
             url:trc.url,
             rates:trc.rates,
-            rate:trc.rate
+            rate:trc.rate,
+            approved:trc.approved
         }as ClientTripModel;
         return tr;
     }
@@ -294,7 +308,8 @@ export class TripService {
             price:trc.price,
             url:trc.url,
             rates:trc.rates,
-            rate:trc.rate
+            rate:trc.rate,
+            approved:trc.approved
         
         }as TripModel;
         return tr;

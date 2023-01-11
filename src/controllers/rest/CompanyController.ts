@@ -1,6 +1,6 @@
-import { BodyParams, MulterOptions, MultipartFile, PlatformMulterFile } from "@tsed/common";
+import { BodyParams, MulterOptions, MultipartFile, PlatformMulterFile, UseBefore } from "@tsed/common";
 import {Controller, Inject} from "@tsed/di";
-import {Get, Post, Put} from "@tsed/schema";
+import {Delete, Get, Post, Put} from "@tsed/schema";
 import { AddTrip } from "src/interfaces/AddTrip";
 import { ClientTripModel } from "src/interfaces/ClientTripModel";
 import { LockTrip } from "src/interfaces/LockTrip";
@@ -8,7 +8,7 @@ import { CompanyModel } from "src/models/CompanyModel";
 import { TripModel } from "src/models/TripModel";
 import { CompanyService } from "src/services/CompanyService";
 import { TripService } from "src/services/TripService";
-
+import {jwtMiddleware}from "src/middlewares/asd"
 @Controller("/company-controller")
 export class CompanyController {
   constructor(@Inject(CompanyService)private service:CompanyService){}
@@ -44,7 +44,11 @@ export class CompanyController {
   update(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
     return this.service.update(com);
   }
-  
+  @UseBefore(jwtMiddleware)
+  @Delete("/")
+  delete(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()com:CompanyModel){
+    return this.service.delete(com);
+  }
   @Put("/addTrip")
   addTrip(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()intr:AddTrip){
     return this.service.addTrip(intr);

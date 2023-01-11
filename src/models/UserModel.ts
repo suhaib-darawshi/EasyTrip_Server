@@ -1,6 +1,9 @@
 import {Property,Default} from "@tsed/schema";
-import { Model, ObjectID } from "@tsed/mongoose";
+import { Model } from '@tsed/mongoose';
 import { MessageModel } from "./MessageModel";
+import { ObjectID } from '@tsed/mongoose';
+
+
 @Model()
 export class UserModel {
   @ObjectID("id")

@@ -4,13 +4,18 @@ import {Get, Post} from "@tsed/schema";
 import {Logger} from "@tsed/logger";
 import "@tsed/logger-smtp";
 import { UserService } from "src/services/UserService";
-@Controller("/hello-world")
+import { UserModel } from "src/models/UserModel";
+import { generateJWT } from "src/auth/passport";
+@Controller("/hello")
 export class HelloWorldController {
   constructor(@Inject(UserService)private service:UserService){}
 
-  // @Post("/")
-  get(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()id1:JSON) {
-    return ;
+  @Post("/")
+  async get(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()id1:UserModel) {
+    const user = await this.service.validateCredentials(id1);
+    
+    const token = generateJWT(user);
+    return token;
 //     const logger = new Logger("loggerName");
 // logger.start;
 // logger.appenders.set("email", {

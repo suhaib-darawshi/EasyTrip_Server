@@ -54,13 +54,9 @@ export class CompanyService {
         return await this.companyMode.find();
     }
     async getInfo(emaill:string){
-        let list:CompanyModel[]=[];
-        list =await this.companyMode.find({email:emaill});
-        for (const iterator of list) {
-            if(emaill==iterator.email){
-                return iterator;
-            }
-        } 
+        let list:CompanyModel|null;
+        list =await this.companyMode.findOne({email:emaill});
+        return list;
     }
     async get(id:string){
         return await this.companyMode.findById(id);
@@ -238,7 +234,8 @@ export class CompanyService {
             price:trc.price,
             url:trc.url,
             rates:trc.rates,
-            rate:trc.rate
+            rate:trc.rate,
+            approved:trc.approved
         }as ClientTripModel;
         return tr;
     }
@@ -267,7 +264,8 @@ export class CompanyService {
             price:trc.price,
             url:trc.url,
             rates:trc.rates,
-            rate:trc.rate
+            rate:trc.rate,
+            approved:trc.approved
         
         }as TripModel;
         return tr;
