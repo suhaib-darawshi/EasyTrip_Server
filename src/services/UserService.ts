@@ -17,7 +17,7 @@ import * as passportLocal from 'passport-local';
 import { Service } from '@tsed/di';
 
 
-const JWT_SECRET = process.env.JWT_SECRET || 'my-secret';
+const userSecret = process.env.userSecret || 'userSecret';
 @Injectable()
 export class UserService {
     constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>){
@@ -27,7 +27,7 @@ export class UserService {
           id: user._id,
           // include any other information you want to include in the token
         };
-        const token = jwt.sign(payload, JWT_SECRET, {
+        const token = jwt.sign(payload, userSecret, {
           expiresIn: '1h', // token expires in one hour
         });
         return token;
@@ -144,7 +144,11 @@ export class UserService {
     }
 
     async create(user:UserModel){
-        return await this.userModel.create(user);
+        let u= await this.userModel.create(user);
+        if(u!=null){
+            return await this.generateJWT(u);
+        }
+        return " ";
         
     }
 

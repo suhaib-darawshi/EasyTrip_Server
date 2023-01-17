@@ -8,6 +8,8 @@ import { ClientTripModel } from "src/interfaces/ClientTripModel";
 import { LockTrip } from "src/interfaces/LockTrip";
 import { CompanyModel } from "src/models/CompanyModel";
 import { TripModel } from "src/models/TripModel";
+import * as jwt from 'jsonwebtoken';
+const companySecret = process.env.companySecret || 'companySecret';
 enum Category{
     beach,
     greenLand,
@@ -25,7 +27,16 @@ export class CompanyService {
     constructor(@Inject(CompanyModel)private companyMode:MongooseModel<CompanyModel>,@Inject(TripModel)private tripModel:MongooseModel<TripModel>){
 
     }
-    
+    async generateJWT(user: CompanyModel) {
+        const payload = {
+          id: user._id,
+          // include any other information you want to include in the token
+        };
+        const token = jwt.sign(payload, companySecret, {
+          expiresIn: '1h', // token expires in one hour
+        });
+        return token;
+      }
     async sendEmail(user:CompanyModel){
         let  x1:Number= (Math.random()*899999)+100000;
         let x:string=x1.toFixed(0);
@@ -62,7 +73,11 @@ export class CompanyService {
         return await this.companyMode.findById(id);
     }
     async create(company:CompanyModel){
-        return await this.companyMode.create(company);
+        let com= await this.companyMode.create(company);
+        if(com!=null){
+            return await this.generateJWT(com);
+        }
+        return " ";
     }
     async signUp(company:CompanyModel){
         let coms:CompanyModel[]=[];
@@ -90,25 +105,6 @@ export class CompanyService {
          com =await this.companyMode.findById(company._id);
          let trips:TripModel[];
         trips =await this.tripModel.find();
-        
-        // let y:string="a";
-    //     if(com!=null){
-    //     for(var x of trips){
-    //         if(x.company==(com._id) ){
-    //             x.company=com._id;
-                
-    //             trips[trips.indexOf(x)].company=co;
-    //             await this.tripModel.findByIdAndUpdate(x._id,x);
-    //             y="asd";
-                
-    //         }
-            
-                
-            
-            
-            
-    //     }
-    // }
         return com;
     }
 
@@ -121,7 +117,7 @@ export class CompanyService {
         for (const iterator of coms) {
             if(company.email==iterator.email){
                 if(company.password==iterator.password){
-                    return "ACCESSED";
+                    return await this.generateJWT(iterator);
                 }
                 else {
                     return "WRONG PASSOWRD";

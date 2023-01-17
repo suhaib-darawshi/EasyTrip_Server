@@ -9,7 +9,7 @@ import { UserService } from "src/services/UserService";
 import * as jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import { configurePassport } from "src/auth/passport";
-import {jwtMiddleware}from "src/middlewares/asd"
+import {userAuth}from "src/middlewares/asd"
 const JWT_SECRET = process.env.JWT_SECRET || 'my-secret';
 @Controller("/public-user-controller")
 export class PublicUserController {
@@ -22,16 +22,12 @@ export class PublicUserController {
     
   }
 
-  @UseBefore(jwtMiddleware)
-  @Get("/")
-  getAll(){
-    return this.userService.getAll();
-  }
+  
   @Post("/signupAuth")
   get(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()id1:UserModel) {
     return this.userService.signUp(id1);
   }
-
+  @UseBefore(userAuth)
   @Post("/")
   createUser(@MultipartFile('file') file:PlatformMulterFile,@BodyParams()user:UserModel){
     if(user.image=="not send"){
@@ -42,7 +38,7 @@ export class PublicUserController {
     }
     return this.userService.create(user);
   }
-  
+  @UseBefore(userAuth)
   @Post("/get-info")
   getInfo(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()user:UserModel){
     
@@ -56,12 +52,13 @@ export class PublicUserController {
     return  this.userService.update(user);
   }
 
-
+  @UseBefore(userAuth)
   @Put("/")
   updateUser(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()user:UserModel){
     
     return this.userService.update(user);
   }
+  @UseBefore(userAuth)
   @Post("/contact")
   contact(@MultipartFile("file")file:PlatformMulterFile,@BodyParams()msg:SendMessageIntr){
     return this.userService.contactApp(msg);
@@ -69,11 +66,7 @@ export class PublicUserController {
   }
 
   
- @UseBefore(jwtMiddleware)
-  @Delete("/")
-  deleteUser(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()user:UserModel){
-    return this.userService.delete(user);
-  }
+ 
 
 
 }

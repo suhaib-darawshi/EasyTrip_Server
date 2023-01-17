@@ -2,19 +2,19 @@ import {Inject, Injectable} from "@tsed/di";
 import { MongooseModel } from "@tsed/mongoose";
 import { UserModel } from "src/models/UserModel";
 import * as jwt from 'jsonwebtoken';
-const JWT_SECRET = process.env.JWT_SECRET || 'my-secret';
+const AdminSecret = process.env.AdminSecret || 'my-AdminSecret';
 @Injectable()
 export class AdminService {
     constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>){
 
     }
     
-    async generateJWT(user: UserModel) {
+    async generateAdminJWT(user: UserModel) {
         const payload = {
           id: user._id,
           // include any other information you want to include in the token
         };
-        const token = jwt.sign(payload, JWT_SECRET, {
+        const token = jwt.sign(payload, AdminSecret, {
           expiresIn: '1h', // token expires in one hour
         });
         return token;
@@ -33,6 +33,6 @@ export class AdminService {
         if(use.role!='Super Admin'){
             return 'UnAuthorized';
         }
-        return await this.generateJWT(user);
+        return await this.generateAdminJWT(user);
     }
 }

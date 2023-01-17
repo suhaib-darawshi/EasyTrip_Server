@@ -7,13 +7,15 @@ import { LikeTripJson } from "src/interfaces/LikeTripJson";
 import { RateTrip } from "src/interfaces/RateTrip";
 import { TripModel } from "src/models/TripModel";
 import { TripService } from "src/services/TripService";
-import {jwtMiddleware}from "src/middlewares/asd"
+import {AdminAuth, userAuth}from "src/middlewares/asd"
+import { RatingsService } from "src/services/RatingsService";
+import { RatingsModel } from "src/models/RatingsModel";
 @Controller("/public-trip-controller")
 export class PublicTripController {
-  constructor(@Inject(TripService)private tripService:TripService){
+  constructor(@Inject(TripService)private tripService:TripService,@Inject(RatingsService)private ratingService:RatingsService){
 
   }
-
+  @UseBefore(userAuth)
   @Get("/")
   getAll() {
     return this.tripService.getAllForUsers();
@@ -29,6 +31,7 @@ export class PublicTripController {
   up(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:ClientTripModel){
     return "./public/uploads/images"+file.filename;
   }
+  @UseBefore(userAuth)
   @Post("/BookTrip")
   bookTrip(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()ids:LikeTripJson){
     return this.tripService.BookTrip(ids);
@@ -37,23 +40,21 @@ export class PublicTripController {
   update(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:ClientTripModel){
     return this.tripService.update(trip);
   }
+  @UseBefore(userAuth)
   @Put("/like-trip")
   likeTrip(@MultipartFile('file')file:PlatformMulterFile,@BodyParams() ids:LikeTripJson){
     return this.tripService.likeTrip(ids);
     
   }
-  @UseBefore(jwtMiddleware)
-  @Delete("/")
-  delete(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()trip:ClientTripModel){
-    return this.tripService.delete(trip);
-  }
+  
   @Post("/addCompany")
   addCompany(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()ids:AddTrip){
     return this.tripService.putCompanyById(ids);
   }
+  @UseBefore(userAuth)
   @Post("/RateTrip")
-  rate(@MultipartFile("file")file:PlatformMulterFile,@BodyParams()rateTrip:RateTrip){
-    return this.tripService.rateTrip(rateTrip);
+  rate(@MultipartFile("file")file:PlatformMulterFile,@BodyParams()rateTrip:RatingsModel){
+    return this.ratingService.rateAtrip(rateTrip);
   }
 
 }

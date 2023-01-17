@@ -118,18 +118,25 @@ export class TripService {
         let a:Array<string>;
         let trip:TripModel | null;
         trip=await this.tripModel.findById(ids.tripid);
+        let us:UserModel|null;
+        us=await this.userModel.findById(ids.userid);
         if(trip == null){
             return "trip not found";
         }
+        if(us==null){
+            return 'user not fount';
+        }
         if(ids.method=="like"){
             trip.liked_users.push(ids.userid);
+            us.liked_trips.push(ids.tripid);
             // return await this.tripModel.findByIdAndUpdate(ids.tripid,trip);
         }
         else {
             trip.liked_users.splice(trip.liked_users.indexOf(ids.userid),1);
-            
+            us.liked_trips.splice(us.liked_trips.indexOf(trip._id),1);
         }
         trip.liked_count=trip.liked_users.length;
+        await this.userModel.findByIdAndUpdate(ids.userid,us);
         return await this.tripModel.findByIdAndUpdate(ids.tripid,trip);
 
         

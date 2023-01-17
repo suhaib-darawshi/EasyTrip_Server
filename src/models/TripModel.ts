@@ -94,7 +94,7 @@ export class TripModel {
   liked_count:Number;
 
   @Property()
-  @Default(true)
+  @Default(false)
   available:boolean;
 
   @Property()
