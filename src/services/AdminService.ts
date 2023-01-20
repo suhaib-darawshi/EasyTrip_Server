@@ -2,12 +2,14 @@ import {Inject, Injectable} from "@tsed/di";
 import { MongooseModel } from "@tsed/mongoose";
 import { UserModel } from "src/models/UserModel";
 import * as jwt from 'jsonwebtoken';
-const AdminSecret = process.env.AdminSecret || 'my-AdminSecret';
+const AdminSecret = process.env.AdminSecret || 'AdminSecret';
+
 @Injectable()
 export class AdminService {
     constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>){
 
     }
+    
     
     async generateAdminJWT(user: UserModel) {
         const payload = {

@@ -15,12 +15,15 @@ import { MessageModel } from "src/models/MessageModel";
 import * as passportLocal from 'passport-local';
 
 import { Service } from '@tsed/di';
+import { TripModel } from "src/models/TripModel";
+import { RatingsModel } from "src/models/RatingsModel";
+import { nmf, nmf1 } from "src/recommentationSystem/FullSystem";
 
 
 const userSecret = process.env.userSecret || 'userSecret';
 @Injectable()
 export class UserService {
-    constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>){
+    constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>,@Inject(RatingsModel)private ratings:MongooseModel<UserModel>,@Inject(TripModel)private tripModel:MongooseModel<TripModel>){
     }
     async generateJWT(user: UserModel) {
         const payload = {
@@ -160,7 +163,77 @@ export class UserService {
     async delete(user:UserModel){
         return await this.userModel.findByIdAndDelete(user._id);
     }
-
+     async  system(){
+        let rates:RatingsModel[]=await this.ratings.find();
+        let users:string[]=[];
+        let trips:string[]=[];
+        for (const iterator of rates) {
+            users.push(iterator.userid);
+            trips.push(iterator.tripid);
+    
+        }
+        var usersSet =new Set(users);
+        var tripsSet=new Set(trips);
+        users=Array.from(usersSet);
+        trips=Array.from(tripsSet);
+        let w = new Array(usersSet.size).fill(0).map(() => new Array(tripsSet.size).fill(0));
+        for (const iterator of rates){
+            w[users.indexOf(iterator.userid)][trips.indexOf(iterator.tripid)]=iterator.rate;
+        }
+        for (let i = 0; i < w.length; i++){
+            for(let j = 0; j < w[0].length; j++){
+                if(!(w[i][j]>0)){
+                    w[i][j]=-1;
+                }
+            }
+        }
+        
+        var result=nmf(w,w.length,1000);
+        console.log(result);
+        for (let i = 0; i < w.length; i++){
+            for(let j = 0; j < w[0].length; j++){
+                if(!(w[i][j]>0)){
+                    if(result[i][j]>4){
+                        await this.mailRecommendation(trips[j],users[i]);
+                        await this.addRecommendation(trips[j],users[i]);
+                    }
+                }
+            }
+        }
+        return;
+        }
+    async addRecommendation(tripid:string,userid:string){
+        let user=await this.userModel.findById(userid);
+        let trip =await this.tripModel.findById(tripid);
+        if(user==null||trip==null)
+        return;
+        user.recomended.push(tripid);
+        return await this.update(user);
+    }
+    async mailRecommendation(tripid:string,userid:string){
+        let user=await this.userModel.findById(userid);
+        let trip =await this.tripModel.findById(tripid);
+        if(user==null||trip==null)
+        return;
+        var transport = createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            auth: {
+              user: "easytrip236@gmail.com", // your email address
+              pass: "eqkprqdbehmtllqs", // your webmail password
+            },
+            secure: true,
+            logger: true,
+            debug: true,
+            
+            
+          });
+          
+          // ...
+          
+         await transport.sendMail({ subject:"Confirm Your SignUp :",from:"Easy Trip",to:user.email,text:"Hi ,\n Check out our new Trip "+trip.name + " , to"+trip.location +"\n for only " + trip.price + " $ \n Come now before it's all filled \n The trip starts at : " +trip.begin.toISOString() });
+         
+    }
     async contactApp(msg:SendMessageIntr){
         let ms:MessageModel={
             userid:msg.userid,

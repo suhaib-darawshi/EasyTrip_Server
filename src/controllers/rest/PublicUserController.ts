@@ -27,15 +27,11 @@ export class PublicUserController {
   get(@MultipartFile('file')file:PlatformMulterFile,@BodyParams()id1:UserModel) {
     return this.userService.signUp(id1);
   }
-  @UseBefore(userAuth)
   @Post("/")
   createUser(@MultipartFile('file') file:PlatformMulterFile,@BodyParams()user:UserModel){
-    if(user.image=="not send"){
+    
       user.image="defaultImage.png";
-    }
-    else {
-      user.image=file.filename;
-    }
+    
     return this.userService.create(user);
   }
   @UseBefore(userAuth)
