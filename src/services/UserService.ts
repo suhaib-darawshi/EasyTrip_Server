@@ -17,29 +17,27 @@ import * as passportLocal from 'passport-local';
 import { Service } from '@tsed/di';
 import { TripModel } from "src/models/TripModel";
 import { RatingsModel } from "src/models/RatingsModel";
-import { nmf, nmf1 } from "src/recommentationSystem/FullSystem";
-
+import { nmf} from "src/recommentationSystem/FullSystem";
+import {pearsonSimilarity} from "src/recommentationSystem/matrixOperations"
 
 const userSecret = process.env.userSecret || 'userSecret';
 @Injectable()
 export class UserService {
-    constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>,@Inject(RatingsModel)private ratings:MongooseModel<UserModel>,@Inject(TripModel)private tripModel:MongooseModel<TripModel>){
+    constructor(@Inject(UserModel)private userModel:MongooseModel<UserModel>,@Inject(RatingsModel)private ratings:MongooseModel<RatingsModel>,@Inject(TripModel)private tripModel:MongooseModel<TripModel>){
     }
     async generateJWT(user: UserModel) {
         const payload = {
           id: user._id,
-          // include any other information you want to include in the token
+          
         };
         const token = jwt.sign(payload, userSecret, {
-          expiresIn: '1h', // token expires in one hour
+          expiresIn: '1h', 
         });
         return token;
       }
       
       
-    async getone(){
-        return await this.userModel.findOne();
-    }
+    
     async getAll(){
         let users:UserModel[]= await this.userModel.find();
         for (var iterator of users) {
@@ -64,8 +62,8 @@ export class UserService {
       host: "smtp.gmail.com",
       port: 465,
       auth: {
-        user: "easytrip236@gmail.com", // your email address
-        pass: "eqkprqdbehmtllqs", // your webmail password
+        user: "easytrip236@gmail.com", 
+        pass: "eqkprqdbehmtllqs", 
       },
       secure: true,
       logger: true,
@@ -104,31 +102,20 @@ export class UserService {
   
 //     }
     async auth(user:UserModel){
-        let users:UserModel[];
-        users=await this.userModel.find({email:user.email});
-        let au:boolean = false;
-        let pu:boolean = false;
-        let usere:UserModel=user;
-        for(var x of users){
-            if(x.email==user.email){
-
-                au=true;
-                if(x.password==user.password){
-                    pu=true;
-                    usere=x;
-                }
-                break;
-            }
-        }
-        if(pu){
-            return await this.generateJWT(usere);
-        }
-        else if(au){
-            return "WRONG PASSOWRD"
-        }
-        else {
+        let users:UserModel|null;
+        users=await this.userModel.findOne({email:user.email});
+        
+        
+        if(users==null){
             return "USER NOT FOUND"
         }
+        if(users.password==user.password){
+            return await this.generateJWT(users);
+        }
+        else {
+            return "WRONG PASSOWRD"
+        }
+        
 
     }
     async get(user:UserModel){
@@ -136,9 +123,9 @@ export class UserService {
         return await this.userModel.find({email:user.email});
     }
     async signUp(user:UserModel){
-        let users:UserModel[]=[];
-        users=await this.userModel.find({email:user.email});
-        if(users.length>0){
+        let users:UserModel|null;
+        users=await this.userModel.findOne({email:user.email});
+        if(users!=null){
             return "Email already signed up";
         }
         else{
@@ -187,12 +174,21 @@ export class UserService {
                 }
             }
         }
+        let fin:number[][]=[w[0]];
         
-        var result=nmf(w,w.length,1000);
+        
+        for(let j = 1; j < w.length; j++){
+            if(pearsonSimilarity(w[0],w[j])>0.5){
+                fin.push(w[j]);
+            }
+        }
+        
+        
+        var result=nmf(fin,fin.length,10000);
         console.log(result);
-        for (let i = 0; i < w.length; i++){
-            for(let j = 0; j < w[0].length; j++){
-                if(!(w[i][j]>0)){
+        for (let i = 0; i < fin.length; i++){
+            for(let j = 0; j < fin[0].length; j++){
+                if(!(fin[i][j]>0)){
                     if(result[i][j]>4){
                         await this.mailRecommendation(trips[j],users[i]);
                         await this.addRecommendation(trips[j],users[i]);
@@ -219,8 +215,8 @@ export class UserService {
             host: "smtp.gmail.com",
             port: 465,
             auth: {
-              user: "easytrip236@gmail.com", // your email address
-              pass: "eqkprqdbehmtllqs", // your webmail password
+              user: "easytrip236@gmail.com", 
+              pass: "eqkprqdbehmtllqs", 
             },
             secure: true,
             logger: true,

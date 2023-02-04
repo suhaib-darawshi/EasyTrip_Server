@@ -52,7 +52,9 @@ export function matrixMultiply(a: number[][], b: number[][]) {
 }
 
   
-  export function pearsonSimilarity(user1: number[], user2: number[]) {
+  export function pearsonSimilarity(user1: number[], user2: number[]):number {
+    console.log('enter');
+    
     let sum1 = 0;
     let sum2 = 0;
     let sum1Sq = 0;
@@ -70,6 +72,7 @@ export function matrixMultiply(a: number[][], b: number[][]) {
             pSum += user1[i] * user2[i];
         }
     }
+  console.log('loop');
   
     if (n == 0) {
         return 0;

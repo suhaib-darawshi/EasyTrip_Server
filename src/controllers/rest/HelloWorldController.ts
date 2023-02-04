@@ -5,7 +5,7 @@ import {Logger} from "@tsed/logger";
 import "@tsed/logger-smtp";
 import { UserService } from "src/services/UserService";
 import { UserModel } from "src/models/UserModel";
-import { system } from "src/recommentationSystem/FullSystem";
+
 import { RatingsService } from "src/services/RatingsService";
 
 @Controller("/hello")
